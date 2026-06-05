@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;background:#000;font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:#fff;overflow:hidden;touch-action:none;}
+html,body{width:100%;height:100%;height:100dvh;background:#000;font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:#fff;overflow:hidden;touch-action:none;}
 
-#player{position:fixed;inset:0;background:#000;overflow:hidden;cursor:none;-webkit-user-select:none;user-select:none;}
+#player{position:fixed;inset:0;width:100dvw;height:100dvh;background:#000;overflow:hidden;cursor:none;-webkit-user-select:none;user-select:none;}
 #player.show-ui{cursor:default;}
 video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;}
 #player.fit-cover video#vid{object-fit:cover;}
