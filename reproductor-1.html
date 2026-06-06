@@ -4081,5 +4081,401 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
 </script>
 
 
+
+<!-- ===== NUEVAS FUNCIONES: GESTOS, MODO NOCTURNO, SRT, BUFFERING ===== -->
+<style>
+/* ── Quitar tinte rojo del topBar y bottomBar ── */
+#topBar,
+#topBar::before,
+#bottomBar,
+#bottomBar::before {
+  background: none !important;
+}
+#topBar {
+  background: linear-gradient(to bottom, rgba(0,0,0,.96) 0%, rgba(0,0,0,.7) 55%, transparent 100%) !important;
+}
+#bottomBar {
+  background: linear-gradient(to top, rgba(0,0,0,.97) 0%, rgba(0,0,0,.75) 45%, transparent 100%) !important;
+}
+
+/* ── Modo nocturno (filtro luz azul) ── */
+#nightFilterOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 198;
+  pointer-events: none;
+  background: rgba(255, 140, 0, 0.18);
+  mix-blend-mode: multiply;
+  display: none;
+  transition: opacity .4s ease;
+}
+#nightFilterOverlay.active { display: block; }
+
+/* ── Indicador deslizar (brillo / volumen) ── */
+#swipeIndicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,.72);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  min-width: 70px;
+}
+#swipeIndicator.show { opacity: 1; }
+#swipeIndicator.left-side { left: 28px; }
+#swipeIndicator.right-side { right: 28px; }
+.swipe-icon { font-size: 18px; }
+.swipe-bar-wrap {
+  width: 5px;
+  height: 80px;
+  background: rgba(255,255,255,.12);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+.swipe-bar-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 99px;
+  transition: height .1s linear;
+}
+.swipe-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Flash de doble tap ── */
+.dbl-tap-flash {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 35%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 18;
+  transition: opacity .15s;
+  border-radius: 0;
+}
+.dbl-tap-flash.show { opacity: 1; }
+#dblTapLeft  { left: 0; background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,.12), transparent 70%); }
+#dblTapRight { right: 0; background: radial-gradient(ellipse at 70% 50%, rgba(255,255,255,.12), transparent 70%); }
+.dbl-tap-flash .dtf-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.dbl-tap-flash .dtf-text span { font-size: 10px; font-weight: 400; opacity: .8; }
+
+/* ── Buffering visual mejorado ── */
+#bufferingBadge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 49;
+  background: rgba(0,0,0,.7);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(12px);
+  font-size: 12px;
+  color: rgba(255,255,255,.8);
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+#bufferingBadge.show { display: flex; }
+.buf-dots { display: flex; gap: 4px; }
+.buf-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #e5383b;
+  animation: bufDot .9s ease-in-out infinite;
+}
+.buf-dots span:nth-child(2) { animation-delay: .15s; }
+.buf-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes bufDot {
+  0%,100% { transform: scale(.6); opacity: .4; }
+  50%      { transform: scale(1.1); opacity: 1; }
+}
+
+
+
+/* ── Botones extra en el panel de control (desktop y mobile) ── */
+/* El botón nocturno reutiliza .ibtn */
+.ibtn.night-btn.on svg { filter: drop-shadow(0 0 6px rgba(255,140,0,.9)); color: #ffaa00 !important; }
+</style>
+
+<!-- Elementos HTML para las nuevas funciones -->
+<div id="nightFilterOverlay"></div>
+<div id="swipeIndicator">
+  <div class="swipe-icon" id="swipeIcon">☀️</div>
+  <div class="swipe-bar-wrap"><div class="swipe-bar-fill" id="swipeBarFill" style="height:50%"></div></div>
+  <div class="swipe-label" id="swipeLabel">50%</div>
+</div>
+<div class="dbl-tap-flash" id="dblTapLeft"><div class="dtf-text">◀◀<span>10s</span></div></div>
+<div class="dbl-tap-flash" id="dblTapRight"><div class="dtf-text">▶▶<span>10s</span></div></div>
+<div id="bufferingBadge">
+  <div class="buf-dots"><span></span><span></span><span></span></div>
+  Cargando…
+</div>
+
+
+
+<script>
+/* ========================================================
+   NUEVAS FUNCIONES — AstroMovie Player
+   ======================================================== */
+
+(function(){
+
+  /* ─── 1. DOBLE TAP izquierda/derecha (±10s) ──────────── */
+  var tapTimer = null;
+  var tapCount = { left: 0, right: 0 };
+  var tapFlushTimer = null;
+
+  function flashDbl(side, secs) {
+    var el = document.getElementById(side === 'left' ? 'dblTapLeft' : 'dblTapRight');
+    if (!el) return;
+    el.querySelector('.dtf-text').innerHTML = (side==='left'?'◀◀':'▶▶') + '<span>' + secs + 's</span>';
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove('show'); }, 700);
+  }
+
+  function handleDblTapSide(side) {
+    if (!window.loaded) return;
+    var secs = 10;
+    if (side === 'left') {
+      if (typeof seek === 'function') seek(-secs);
+      flashDbl('left', secs);
+    } else {
+      if (typeof seek === 'function') seek(secs);
+      flashDbl('right', secs);
+    }
+  }
+
+  var playerEl = document.getElementById('player');
+  if (playerEl) {
+    var lastTap = 0;
+    var lastSide = '';
+    playerEl.addEventListener('touchend', function(e) {
+      if (window.locked) return;
+      var touch = e.changedTouches[0];
+      if (!touch) return;
+      var w = playerEl.offsetWidth;
+      var x = touch.clientX - playerEl.getBoundingClientRect().left;
+      var side = x < w * 0.35 ? 'left' : x > w * 0.65 ? 'right' : 'center';
+      if (side === 'center') return;
+
+      var now = Date.now();
+      if (now - lastTap < 300 && side === lastSide) {
+        // Doble tap
+        handleDblTapSide(side);
+        lastTap = 0;
+      } else {
+        lastTap = now;
+        lastSide = side;
+      }
+    }, { passive: true });
+  }
+
+  /* ─── 2. DESLIZAR VERTICAL — Brillo (izq) / Volumen (der) ── */
+  var swipeActive = false;
+  var swipeType = '';    // 'brightness' | 'volume'
+  var swipeStartY = 0;
+  var swipeStartVal = 0;
+  var brightnessVal = 1;
+  var swipeEl = document.getElementById('swipeIndicator');
+  var swipeFill = document.getElementById('swipeBarFill');
+  var swipeLabel = document.getElementById('swipeLabel');
+  var swipeIcon = document.getElementById('swipeIcon');
+  var swipeHideTimer = null;
+  var SWIPE_MIN_MOVE = 12; // px antes de activar
+
+  // Overlay de brillo
+  var brightnessOverlay = document.createElement('div');
+  brightnessOverlay.id = 'brightnessOverlay';
+  brightnessOverlay.style.cssText = 'position:absolute;inset:0;z-index:197;pointer-events:none;background:#000;opacity:0;transition:opacity .15s;';
+  if (playerEl) playerEl.appendChild(brightnessOverlay);
+
+  function setBrightness(v) {
+    brightnessVal = Math.max(0.05, Math.min(1, v));
+    brightnessOverlay.style.opacity = 1 - brightnessVal;
+  }
+
+  function showSwipe(type, val) {
+    if (!swipeEl) return;
+    swipeType = type;
+    var pct = Math.round(val * 100);
+    swipeFill.style.height = pct + '%';
+    swipeLabel.textContent = pct + '%';
+    swipeIcon.textContent = type === 'brightness' ? '☀️' : (val === 0 ? '🔇' : val < 0.4 ? '🔉' : '🔊');
+    swipeEl.className = 'show ' + (type === 'brightness' ? 'left-side' : 'right-side');
+    clearTimeout(swipeHideTimer);
+    swipeHideTimer = setTimeout(function(){ swipeEl.classList.remove('show'); }, 1200);
+  }
+
+  if (playerEl) {
+    var touchStartX = 0, touchStartY2 = 0;
+    var swipeStarted = false;
+    var swipeDir = '';
+
+    playerEl.addEventListener('touchstart', function(e) {
+      if (window.locked || e.touches.length !== 1) return;
+      var t = e.touches[0];
+      touchStartX = t.clientX - playerEl.getBoundingClientRect().left;
+      touchStartY2 = t.clientY;
+      var w = playerEl.offsetWidth;
+      swipeDir = touchStartX < w * 0.35 ? 'brightness' : touchStartX > w * 0.65 ? 'volume' : '';
+      swipeActive = false;
+      swipeStarted = false;
+      swipeStartY = t.clientY;
+      swipeStartVal = swipeDir === 'brightness' ? brightnessVal : (window.vid ? window.vid.volume : 1);
+    }, { passive: true });
+
+    playerEl.addEventListener('touchmove', function(e) {
+      if (window.locked || !swipeDir || e.touches.length !== 1) return;
+      var t = e.touches[0];
+      var dy = swipeStartY - t.clientY;
+      var dx = Math.abs(t.clientX - (touchStartX + playerEl.getBoundingClientRect().left));
+      if (!swipeActive && Math.abs(dy) < SWIPE_MIN_MOVE) return;
+      if (!swipeActive && dx > Math.abs(dy)) return; // es horizontal
+      swipeActive = true;
+
+      var h = playerEl.offsetHeight;
+      var delta = dy / (h * 0.7);
+      var newVal = Math.max(0, Math.min(1, swipeStartVal + delta));
+
+      if (swipeDir === 'brightness') {
+        setBrightness(newVal);
+        showSwipe('brightness', newVal);
+      } else {
+        var vid = document.getElementById('vid');
+        if (vid) {
+          vid.volume = newVal;
+          vid.muted = newVal === 0;
+          if (typeof updateVolIco === 'function') updateVolIco(newVal);
+          var slider = document.getElementById('volSlider');
+          if (slider) slider.value = newVal;
+        }
+        showSwipe('volume', newVal);
+      }
+    }, { passive: true });
+
+    playerEl.addEventListener('touchend', function() {
+      swipeActive = false;
+    }, { passive: true });
+  }
+
+  /* ─── 3. BUFFERING VISUAL MEJORADO ──────────────────────── */
+  var bufBadge = document.getElementById('bufferingBadge');
+  var bufTimer = null;
+
+  function updateBufferingBadge() {
+    var vid = document.getElementById('vid');
+    if (!vid || !window.loaded) return;
+    var isBuffering = vid.readyState < 3 && !vid.paused;
+    if (isBuffering) {
+      clearTimeout(bufTimer);
+      if (bufBadge) bufBadge.classList.add('show');
+    } else {
+      clearTimeout(bufTimer);
+      bufTimer = setTimeout(function(){
+        if (bufBadge) bufBadge.classList.remove('show');
+      }, 300);
+    }
+  }
+
+  // Observar el video cuando aparezca
+  function attachBufferingListeners() {
+    var vid = document.getElementById('vid');
+    if (!vid || vid._bufListeners) return;
+    vid._bufListeners = true;
+    ['waiting','stalled','seeking'].forEach(function(ev){
+      vid.addEventListener(ev, function(){ if(window.loaded) { clearTimeout(bufTimer); if(bufBadge) bufBadge.classList.add('show'); } });
+    });
+    ['playing','canplay','seeked','loadeddata'].forEach(function(ev){
+      vid.addEventListener(ev, function(){ clearTimeout(bufTimer); bufTimer = setTimeout(function(){ if(bufBadge) bufBadge.classList.remove('show'); }, 350); });
+    });
+    setInterval(updateBufferingBadge, 500);
+  }
+  setTimeout(attachBufferingListeners, 500);
+  window.addEventListener('load', function(){ setTimeout(attachBufferingListeners, 200); });
+
+  /* ─── 4. MODO NOCTURNO (filtro luz azul) ──────────────── */
+  var nightActive = false;
+  var nightEl = document.getElementById('nightFilterOverlay');
+
+  window.toggleNightMode = function() {
+    nightActive = !nightActive;
+    if (nightEl) nightEl.classList[nightActive ? 'add' : 'remove']('active');
+    var btns = document.querySelectorAll('.night-btn');
+    btns.forEach(function(b){ b.classList[nightActive ? 'add' : 'remove']('on'); });
+    if (typeof toast === 'function') toast(nightActive ? '🌙 Modo nocturno ON' : '☀️ Modo nocturno OFF');
+  };
+
+  /* ─── 5. INYECTAR BOTONES EN LA UI ──────────────────────
+     Solo modo nocturno ── */
+  function injectButtons() {
+    var nightSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>';
+
+    // Desktop: añadir al grupo derecho
+    var btnsDesktop = document.querySelector('.btns-desktop .btn-group:last-child');
+    if (btnsDesktop && !document.getElementById('nightBtnD')) {
+      var nightD = document.createElement('button');
+      nightD.className = 'ibtn night-btn';
+      nightD.id = 'nightBtnD';
+      nightD.setAttribute('data-tip','Modo nocturno');
+      nightD.setAttribute('onclick','toggleNightMode()');
+      nightD.innerHTML = nightSvg;
+      btnsDesktop.insertBefore(nightD, btnsDesktop.lastElementChild);
+    }
+
+    // Mobile: añadir en mob-row1
+    var mobRow = document.querySelector('.mob-row1');
+    if (mobRow && !document.getElementById('nightBtnM')) {
+      var nightM = document.createElement('button');
+      nightM.className = 'ibtn night-btn';
+      nightM.id = 'nightBtnM';
+      nightM.setAttribute('onclick','toggleNightMode()');
+      nightM.innerHTML = nightSvg;
+      mobRow.insertBefore(nightM, mobRow.firstChild);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectButtons);
+  } else { injectButtons(); }
+  [300, 800, 1800].forEach(function(ms){ setTimeout(injectButtons, ms); });
+
+})();
+</script>
+<!-- ===== FIN NUEVAS FUNCIONES ===== -->
+
 </body>
 </html>
