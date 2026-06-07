@@ -84,7 +84,7 @@ video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;di
 
 .loader-dot,.loader-bar,.loader-label{display:none!important;}
 
-#uploadScreen{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:radial-gradient(ellipse 120% 80% at 50% 110%,rgba(229,56,59,.1) 0%,transparent 65%),#0e0e0e;padding:20px;}
+#uploadScreen{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#0e0e0e;padding:20px;}
 .upl-logo{font-size:10px;letter-spacing:5px;font-weight:600;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:4px;}
 .upl-box{position:relative;cursor:pointer;border:1.5px dashed rgba(255,255,255,.12);border-radius:14px;padding:40px 52px;display:flex;flex-direction:column;align-items:center;gap:14px;transition:border-color .2s,background .2s;width:100%;max-width:380px;}
 .upl-box:hover,.upl-box.drag{border-color:rgba(229,56,59,.55);background:rgba(229,56,59,.04);}
@@ -640,11 +640,7 @@ video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;di
 }
 #topBar::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,
-    rgba(229,56,59,.06) 0%,
-    transparent 40%,
-    transparent 100%
-  );
+  background:transparent;
   pointer-events:none;
 }
 
@@ -689,11 +685,7 @@ video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;di
 }
 #bottomBar::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,
-    rgba(229,56,59,.04) 0%,
-    transparent 50%,
-    rgba(229,56,59,.02) 100%
-  );
+  background:transparent;
   pointer-events:none;
 }
 
@@ -973,10 +965,7 @@ video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;di
 
 /* ── UPLOAD SCREEN — premium dark ── */
 #uploadScreen{
-  background:
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(229,56,59,.12) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(76,201,240,.04) 0%, transparent 55%),
-    #080808 !important;
+  background:#080808 !important;
 }
 .upl-logo{
   font-family:'Bebas Neue',sans-serif !important;
@@ -1207,9 +1196,7 @@ body.tv-mode{
   --am-glow:rgba(229,56,59,.6);
 }
 body.tv-mode #player{
-  background:
-    radial-gradient(1600px 800px at 50% 115%, rgba(229,56,59,.09), transparent 60%),
-    #000 !important;
+  background:#000 !important;
 }
 body.tv-mode .prog-track{height:8px !important;}
 body.tv-mode .prog-hit:hover .prog-track,
@@ -1243,16 +1230,12 @@ body.tv-mode #centerBtn.tv-focus{transform:scale(1.12) !important;}
 
 /* ── Fondo del player con vignette cinematográfica ── */
 #player{
-  background:
-    radial-gradient(ellipse 140% 80% at 50% 110%, rgba(229,56,59,.07) 0%, transparent 55%),
-    #000 !important;
+  background:#000 !important;
 }
 
 /* ── Loader overlay ultra premium ── */
 #loaderOverlay{
-  background:
-    radial-gradient(ellipse 100% 80% at 50% 60%, rgba(229,56,59,.08) 0%, transparent 60%),
-    rgba(0,0,0,.82) !important;
+  background:rgba(0,0,0,.82) !important;
   backdrop-filter:blur(16px) saturate(1.1) !important;
 }
 .loader-ring-wrap{width:86px;height:86px;}
@@ -1288,9 +1271,7 @@ body.tv-mode #centerBtn.tv-focus{transform:scale(1.12) !important;}
 
 /* ── Upload screen ── */
 #uploadScreen{
-  background:
-    radial-gradient(ellipse 120% 80% at 50% 110%, rgba(229,56,59,.09) 0%, transparent 65%),
-    #0c0c0c !important;
+  background:#0c0c0c !important;
 }
 .upl-ico{
   width:60px;height:60px;
@@ -1534,9 +1515,7 @@ body.tv-mode{
   --am-glow:rgba(229,56,59,.58);
 }
 body.tv-mode #player{
-  background:
-    radial-gradient(1400px 700px at 50% 120%, rgba(229,56,59,.07), transparent 60%),
-    #000 !important;
+  background:#000 !important;
 }
 body.tv-mode .panel-item.active{background:rgba(229,56,59,.12) !important;}
 body.tv-mode .tv-focus{
@@ -1658,9 +1637,7 @@ body.tv-mode{
   --am-border:rgba(255,255,255,.14);
 }
 body.tv-mode #player{
-  background:
-    radial-gradient(1200px 600px at 50% 120%, rgba(229,56,59,.08), transparent 60%),
-    #000 !important;
+  background:#000 !important;
 }
 body.tv-mode #poster::after{
   background:
