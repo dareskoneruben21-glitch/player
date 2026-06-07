@@ -3396,7 +3396,7 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
     var poster=nxtPost();
     if(poster){
       var bg=document.createElement('div');
-      bg.style.cssText='position:absolute;inset:0;background-image:url("'+poster+'");background-size:cover;background-position:center;filter:blur(22px) brightness(.22);transform:scale(1.1);';
+      bg.style.cssText='position:absolute;inset:0;background-image:url("'+poster+'");background-size:cover;background-position:center;filter:brightness(.22);transform:scale(1.1),';
       el.appendChild(bg);
       var img=document.createElement('img');
       img.src=poster;
@@ -3848,7 +3848,7 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
 #novaRecBg {
   position: absolute; inset: 0;
   background-size: cover; background-position: center;
-  filter: blur(32px) brightness(.15) saturate(.5);
+  filter: brightness(.15) saturate(.5);
   transform: scale(1.1);
 }
 
@@ -4845,7 +4845,7 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: blur(28px) brightness(.18) saturate(.6);
+  filter: brightness(.18) saturate(.6);
   transform: scale(1.08);
   transition: filter .5s ease;
 }
@@ -5098,25 +5098,11 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
   }
 
   function onBuffer() {
-    var now = Date.now();
-    bufHistory.push(now);
-    /* Limpiar eventos viejos fuera de la ventana */
-    bufHistory = bufHistory.filter(function(t){ return now - t < WINDOW_MS; });
-
-    var count = bufHistory.length;
-    if (count >= 4) {
-      show('bad', '⚠ Red lenta — ' + count + ' cortes');
-    } else if (count >= 2) {
-      show('warn', '↺ Inestable — ' + count + ' cortes');
-    }
+    /* Badge de red desactivado */
   }
 
   function onStable() {
-    /* Si la red estaba marcada como mala y se estabilizó */
-    if (badge && badge.classList.contains('show')) {
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(function(){ badge.classList.remove('show','warn','bad'); }, 3000);
-    }
+    /* Badge de red desactivado */
   }
 
   function attach() {
