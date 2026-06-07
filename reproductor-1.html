@@ -629,6 +629,33 @@ video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;di
   mix-blend-mode:overlay;
 }
 
+/* ── FULLSCREEN: máxima calidad de imagen ── */
+:fullscreen #player::before,
+:-webkit-full-screen #player::before,
+:-moz-full-screen #player::before,
+:-ms-fullscreen #player::before {
+  display:none !important;
+}
+:fullscreen video#vid,
+:-webkit-full-screen video#vid,
+:-moz-full-screen video#vid,
+:-ms-fullscreen video#vid {
+  image-rendering:auto !important;
+  filter:none !important;
+  transform:none !important;
+  -webkit-transform:none !important;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+:fullscreen #player,
+:-webkit-full-screen #player,
+:-moz-full-screen #player,
+:-ms-fullscreen #player {
+  background:
+    radial-gradient(ellipse 140% 80% at 50% 110%, rgba(229,56,59,.07) 0%, transparent 55%),
+    #000 !important;
+}
+
 /* ── TOP BAR — glassmorphism total ── */
 #topBar{
   background:linear-gradient(to bottom,
