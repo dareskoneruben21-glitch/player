@@ -150,6 +150,8 @@ video#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;di
 }
 #poster::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.45) 100%);}
 #poster.gone{opacity:0;}
+/* Ocultar poster mientras el loader está activo — evita el fondo borroso */
+#player:has(#loaderOverlay.active) #poster { opacity:0 !important; pointer-events:none; }
 
 #topBar{
   position:absolute;top:0;left:0;right:0;
@@ -1279,8 +1281,8 @@ body.tv-mode #centerBtn.tv-focus{transform:scale(1.12) !important;}
 #loaderOverlay{
   background:
     radial-gradient(ellipse 100% 80% at 50% 60%, rgba(229,56,59,.08) 0%, transparent 60%),
-    rgba(0,0,0,.82) !important;
-  backdrop-filter:blur(16px) saturate(1.1) !important;
+    rgba(0,0,0,.96) !important;
+  backdrop-filter:none !important;
 }
 .loader-ring-wrap{width:86px;height:86px;}
 .loader-dot{
