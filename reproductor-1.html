@@ -1763,7 +1763,6 @@ body.tv-mode #tvProgressBoost{
   border-radius:4px;
 }
 #subBtnD.on,#subBtnM.on{color:#e5383b!important;opacity:1!important;}
-#audioBtnD.on,#audioBtnM.on{color:#4cc9f0!important;opacity:1!important;}
 
 </style>
 </head>
@@ -2056,7 +2055,7 @@ body.tv-mode #tvProgressBoost{
               <div class="panel-item" id="fcd-fill"  onclick="setFit('fill')"><span class="dot"></span>Expandir</div>
             </div>
           </div>
-          <button class="ibtn" id="subBtnD" onclick="toggleSubs()" data-tip="Subtítulos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 5a1.5 1.5 0 100 3h2v-1H7a.5.5 0 010-1h2v-1H7zm8 0a1.5 1.5 0 100 3h2v-1h-2a.5.5 0 010-1h2v-1h-2z"/></svg></button><button class="ibtn" id="audioBtnD" style="display:none" onclick="toggleAudioLang()" data-tip="Idioma de audio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A7.02 7.02 0 0118.93 9zM12 5.08c.83 1.2 1.49 2.53 1.91 3.92h-3.82c.42-1.39 1.08-2.72 1.91-3.92zM5.08 15A6.97 6.97 0 015 12c0-.34.03-.68.08-1h3.36c-.06.65-.09 1.32-.09 2s.03 1.35.09 2H5.08zm.99 2h2.95c.35 1.25.8 2.45 1.38 3.56A6.99 6.99 0 016.07 17zm2.95-8H6.07a6.99 6.99 0 014.33-3.56A15.65 15.65 0 009.02 9zM12 18.92A14.18 14.18 0 0110.09 15h3.82a14.18 14.18 0 01-1.91 3.92zM14.34 13H9.66c-.07-.65-.11-1.32-.11-2s.04-1.35.11-2h4.68c.07.65.11 1.32.11 2s-.04 1.35-.11 2zm.36 4.56c.58-1.11 1.03-2.31 1.38-3.56h2.95a6.99 6.99 0 01-4.33 3.56zM16.07 13c.06-.65.09-1.32.09-2s-.03-1.35-.09-2h3.36c.05.32.08.66.08 1a6.97 6.97 0 01-.08 1h-3.36z"/></svg><span id="audioLblD" style="font-size:9px;font-weight:800;margin-left:2px;letter-spacing:.5px;">ES</span></button><button class="ibtn" id="loopBtnD" onclick="toggleLoop()" data-tip="Repetir">
+          <button class="ibtn" id="subBtnD" onclick="toggleSubs()" data-tip="Subtítulos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 5a1.5 1.5 0 100 3h2v-1H7a.5.5 0 010-1h2v-1H7zm8 0a1.5 1.5 0 100 3h2v-1h-2a.5.5 0 010-1h2v-1h-2z"/></svg></button><button class="ibtn" id="loopBtnD" onclick="toggleLoop()" data-tip="Repetir">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
           </button>
           <button class="ibtn" onclick="togglePip()" data-tip="Picture in Picture">
@@ -2073,7 +2072,7 @@ body.tv-mode #tvProgressBoost{
 
       
       <div class="btns-mobile">
-        <div class="mob-row1"><button class="ibtn" id="subBtnM" style="display:flex!important" onclick="toggleSubs()" data-tip="Subtítulos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 5a1.5 1.5 0 100 3h2v-1H7a.5.5 0 010-1h2v-1H7zm8 0a1.5 1.5 0 100 3h2v-1h-2a.5.5 0 010-1h2v-1h-2z"/></svg></button><button class="ibtn" id="audioBtnM" style="display:none" onclick="toggleAudioLang()" data-tip="Idioma de audio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A7.02 7.02 0 0118.93 9zM12 5.08c.83 1.2 1.49 2.53 1.91 3.92h-3.82c.42-1.39 1.08-2.72 1.91-3.92zM5.08 15A6.97 6.97 0 015 12c0-.34.03-.68.08-1h3.36c-.06.65-.09 1.32-.09 2s.03 1.35.09 2H5.08zm.99 2h2.95c.35 1.25.8 2.45 1.38 3.56A6.99 6.99 0 016.07 17zm2.95-8H6.07a6.99 6.99 0 014.33-3.56A15.65 15.65 0 009.02 9zM12 18.92A14.18 14.18 0 0110.09 15h3.82a14.18 14.18 0 01-1.91 3.92zM14.34 13H9.66c-.07-.65-.11-1.32-.11-2s.04-1.35.11-2h4.68c.07.65.11 1.32.11 2s-.04 1.35-.11 2zm.36 4.56c.58-1.11 1.03-2.31 1.38-3.56h2.95a6.99 6.99 0 01-4.33 3.56zM16.07 13c.06-.65.09-1.32.09-2s-.03-1.35-.09-2h3.36c.05.32.08.66.08 1a6.97 6.97 0 01-.08 1h-3.36z"/></svg><span id="audioLblM" style="font-size:9px;font-weight:800;margin-left:2px;letter-spacing:.5px;">ES</span></button>
+        <div class="mob-row1"><button class="ibtn" id="subBtnM" style="display:flex!important" onclick="toggleSubs()" data-tip="Subtítulos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 5a1.5 1.5 0 100 3h2v-1H7a.5.5 0 010-1h2v-1H7zm8 0a1.5 1.5 0 100 3h2v-1h-2a.5.5 0 010-1h2v-1h-2z"/></svg></button>
           <div class="panel-wrap">
             <button class="speed-pill" id="speedPillM" onclick="togglePanel('speedM')">1×</button>
             <div class="panel panel-speed" id="speedPanelM">
@@ -2875,129 +2874,6 @@ function limpiarLink(link) {
 })();
 
 function msg(t){var x=document.getElementById('toast');if(!x)return;x.textContent=t;x.classList.add('show');clearTimeout(window._m);window._m=setTimeout(function(){x.classList.remove('show');},1600);}
-</script>
-
-<!-- ===== AUDIO ES/EN — alternar pista de idioma sin romper nada ===== -->
-<script>
-(function(){
-  function getVid(){ return document.getElementById('vid'); }
-  function showBtns(){
-    ['audioBtnD','audioBtnM'].forEach(function(id){
-      var b = document.getElementById(id);
-      if(b) b.style.display = 'flex';
-    });
-  }
-  function setLabel(txt){
-    ['audioLblD','audioLblM'].forEach(function(id){
-      var s = document.getElementById(id);
-      if(s) s.textContent = txt;
-    });
-    ['audioBtnD','audioBtnM'].forEach(function(id){
-      var b = document.getElementById(id);
-      if(b) b.classList.add('on');
-    });
-  }
-  function langTxt(track, idx){
-    var l = (track && track.language || '').toLowerCase();
-    if(l.indexOf('es') === 0) return 'ES';
-    if(l.indexOf('en') === 0) return 'EN';
-    var k = (track && (track.label||track.kind) || '').toLowerCase();
-    if(k.indexOf('lat') > -1 || k.indexOf('esp') > -1) return 'ES';
-    if(k.indexOf('ing') > -1 || k.indexOf('eng') > -1) return 'EN';
-    return 'A' + (idx+1);
-  }
-
-  /* ── MODO 1: pistas de audio embebidas en el propio .mp4 (automático, cero configuración) ── */
-  function setupNativeTracks(){
-    var vid = getVid();
-    if(!vid) return false;
-    var at = vid.audioTracks;
-    if(!at || at.length < 2) return false;
-
-    showBtns();
-    var curIdx = 0;
-    for(var i=0;i<at.length;i++){ if(at[i].enabled) curIdx = i; }
-    setLabel(langTxt(at[curIdx], curIdx));
-
-    window.toggleAudioLang = function(){
-      var at2 = vid.audioTracks;
-      if(!at2 || at2.length < 2) return;
-      var cur = 0;
-      for(var i=0;i<at2.length;i++){ if(at2[i].enabled) cur = i; }
-      var next = (cur + 1) % at2.length;
-      for(var i=0;i<at2.length;i++){ at2[i].enabled = (i === next); }
-      setLabel(langTxt(at2[next], next));
-      msg('🔊 Audio: ' + langTxt(at2[next], next));
-    };
-    return true;
-  }
-
-  /* ── MODO 2 (respaldo manual): URLs separadas por idioma vía parámetros audioEs/audioEn ── */
-  function setupUrlMode(){
-    function b64d(s){
-      if(!s) return '';
-      try{
-        s = s.replace(/-/g,'+').replace(/_/g,'/');
-        while(s.length%4) s+='=';
-        var bytes = Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); });
-        try{ return new TextDecoder('utf-8').decode(bytes); }
-        catch(e){ return new TextDecoder('iso-8859-1').decode(bytes); }
-      }catch(e){ return s; }
-    }
-    var params = new URLSearchParams(location.search);
-    var urlEs = b64d(params.get('audioEs') || '');
-    var urlEn = b64d(params.get('audioEn') || '');
-    var mainIsEn = (params.get('audioMain') || '').toLowerCase() === 'en';
-    if(!((urlEs && urlEn) || (mainIsEn && urlEs) || (!mainIsEn && urlEn))) return false;
-
-    var current = mainIsEn ? 'en' : 'es';
-    var switching = false;
-    showBtns();
-    setLabel(current.toUpperCase());
-
-    window.toggleAudioLang = function(){
-      var vid = getVid();
-      if(!vid || switching) return;
-      var target = current === 'es' ? 'en' : 'es';
-      var targetUrl = target === 'es' ? urlEs : urlEn;
-      if(!targetUrl){ msg('Audio en ese idioma no disponible'); return; }
-      switching = true;
-      var savedTime = vid.currentTime || 0, wasPlaying = !vid.paused;
-      var onReady = function(){
-        vid.removeEventListener('loadedmetadata', onReady);
-        try{ vid.currentTime = savedTime; }catch(e){}
-        if(wasPlaying){ vid.play().catch(function(){}); }
-        switching = false;
-      };
-      vid.addEventListener('loadedmetadata', onReady);
-      vid.src = targetUrl;
-      vid.load();
-      current = target;
-      setLabel(current.toUpperCase());
-      msg(current === 'en' ? '🔊 Audio: Inglés' : '🔊 Audio: Español');
-    };
-    return true;
-  }
-
-  /* ── Arranque: intenta detección automática primero; si el dispositivo no soporta
-       audioTracks o el archivo no trae 2 pistas, intenta de nuevo tras metadata cargada,
-       y si tampoco, cae al modo manual por URL (si se pasaron los parámetros) ── */
-  function init(){
-    if(setupNativeTracks()) return;
-    if(setupUrlMode()) return;
-    var vid = getVid();
-    if(!vid) return;
-    var tries = 0;
-    var iv = setInterval(function(){
-      tries++;
-      if(setupNativeTracks() || tries > 20){ clearInterval(iv); }
-    }, 300);
-  }
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
-})();
 </script>
 
 
@@ -4584,6 +4460,214 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
 })();
 </script>
 <!-- ===== FIN NUEVAS FUNCIONES ===== -->
+
+<!-- ===== BOTÓN FLOTANTE DE AUDIO LATINO/INGLÉS =====
+     Lee los parámetros audioEs / audioEn de la URL (Base64 URL-safe,
+     generados por Genhumo.html). Si ambos existen, muestra un botón
+     flotante ES/EN que cambia de pista de audio conservando el
+     progreso de reproducción, sin recargar la página.
+     No toca ninguna variable interna del reproductor (vid, curSrc,
+     boot, etc.) — trabaja únicamente sobre el DOM, igual que los
+     demás parches de esta sección. ============================= -->
+<style>
+#audioToggleBtn{
+  position:absolute;
+  right:clamp(10px,2.5vw,22px);
+  bottom:calc(clamp(70px,16vw,110px) + env(safe-area-inset-bottom,0px));
+  z-index:30;
+  display:none;
+  align-items:center;
+  gap:7px;
+  padding:9px 14px 9px 11px;
+  background:rgba(15,15,20,.72);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:99px;
+  color:#fff;
+  font-family:'Outfit',Arial,sans-serif;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.2px;
+  cursor:pointer;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 4px 18px rgba(0,0,0,.35);
+  transition:opacity .3s,transform .3s,background .15s,border-color .15s;
+  opacity:0;
+  transform:translateY(6px);
+  pointer-events:none;
+  user-select:none;
+}
+#audioToggleBtn.ready{display:flex;}
+#audioToggleBtn.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+#audioToggleBtn:hover{background:rgba(30,30,38,.85);border-color:rgba(255,255,255,.3);}
+#audioToggleBtn:active{transform:translateY(0) scale(.96);}
+#audioToggleBtn .flag{font-size:16px;line-height:1;}
+#audioToggleBtn .lang-label{display:flex;flex-direction:column;line-height:1.15;}
+#audioToggleBtn .lang-cur{font-size:12px;color:#fff;}
+#audioToggleBtn .lang-next{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:500;}
+#audioToggleBtn.switching{opacity:.55;pointer-events:none;}
+body.tv-mode #audioToggleBtn{padding:14px 20px 14px 16px;font-size:18px;bottom:clamp(110px,20vw,150px);}
+body.tv-mode #audioToggleBtn .flag{font-size:22px;}
+body.tv-mode #audioToggleBtn .lang-cur{font-size:16px;}
+body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
+@media (max-width:480px){
+  #audioToggleBtn{padding:8px 12px 8px 10px;font-size:12px;}
+  #audioToggleBtn .flag{font-size:15px;}
+}
+</style>
+<script>
+(function(){
+  /* Decodifica base64 URL-safe UTF-8 — mismo esquema que usa Genhumo.html */
+  function b64d(s){
+    if(!s) return '';
+    try{
+      s = s.replace(/-/g,'+').replace(/_/g,'/');
+      while(s.length % 4) s += '=';
+      var bytes = Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); });
+      try{ return new TextDecoder('utf-8').decode(bytes); }
+      catch(e){ return new TextDecoder('iso-8859-1').decode(bytes); }
+    }catch(e){ return s; }
+  }
+
+  var params  = new URLSearchParams(location.search);
+  var srcEs   = b64d(params.get('audioEs') || '');
+  var srcEn   = b64d(params.get('audioEn') || '');
+
+  /* Si no hay ambas pistas, no tiene sentido mostrar el botón */
+  if (!srcEs || !srcEn) return;
+
+  var LANGS = {
+    Es: { label: 'Latino', flag: '🇪🇸', src: srcEs },
+    En: { label: 'Inglés', flag: '🇺🇸', src: srcEn }
+  };
+
+  /* Determinar idioma actual comparando el src del <video> con las 2 URLs.
+     Si no coincide con ninguna (ej. el link "principal" del catálogo es
+     distinto), se asume Latino como punto de partida. */
+  function detectCurrentLang(vid) {
+    if (!vid) return 'Es';
+    var cur = vid.currentSrc || vid.src || '';
+    if (cur && cur.indexOf(srcEn) !== -1) return 'En';
+    return 'Es';
+  }
+
+  var currentLang = null;
+  var switching = false;
+
+  function buildBtn() {
+    if (document.getElementById('audioToggleBtn')) return document.getElementById('audioToggleBtn');
+    var player = document.getElementById('player');
+    if (!player) return null;
+    var btn = document.createElement('button');
+    btn.id = 'audioToggleBtn';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Cambiar idioma de audio');
+    btn.innerHTML =
+      '<span class="flag" id="audioToggleFlag">🇪🇸</span>' +
+      '<span class="lang-label">' +
+        '<span class="lang-cur" id="audioToggleCur">Latino</span>' +
+        '<span class="lang-next" id="audioToggleNext">Cambiar a Inglés</span>' +
+      '</span>';
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      switchAudio();
+    });
+    player.appendChild(btn);
+    return btn;
+  }
+
+  function paintBtn() {
+    var btn = document.getElementById('audioToggleBtn');
+    if (!btn || !currentLang) return;
+    var other = currentLang === 'Es' ? 'En' : 'Es';
+    document.getElementById('audioToggleFlag').textContent = LANGS[currentLang].flag;
+    document.getElementById('audioToggleCur').textContent = LANGS[currentLang].label;
+    document.getElementById('audioToggleNext').textContent = 'Cambiar a ' + LANGS[other].label;
+    btn.classList.add('ready');
+  }
+
+  function showBtn() {
+    var btn = document.getElementById('audioToggleBtn');
+    if (btn) btn.classList.add('visible');
+  }
+  function hideBtnIfUiHidden() {
+    var btn = document.getElementById('audioToggleBtn');
+    var bottomBar = document.getElementById('bottomBar');
+    if (!btn) return;
+    if (bottomBar && bottomBar.classList.contains('hidden')) btn.classList.remove('visible');
+  }
+
+  function switchAudio() {
+    var vid = document.getElementById('vid');
+    if (!vid || switching || !currentLang) return;
+    var nextLang = currentLang === 'Es' ? 'En' : 'Es';
+    var resumeAt = vid.currentTime || 0;
+    var wasPaused = vid.paused;
+    switching = true;
+    var btn = document.getElementById('audioToggleBtn');
+    if (btn) btn.classList.add('switching');
+
+    function onReady() {
+      vid.removeEventListener('loadedmetadata', onReady);
+      try { vid.currentTime = resumeAt; } catch(e){}
+      if (!wasPaused) { vid.play().catch(function(){}); }
+      currentLang = nextLang;
+      switching = false;
+      if (btn) btn.classList.remove('switching');
+      paintBtn();
+      if (typeof toast === 'function') {
+        try { toast((nextLang === 'Es' ? '🇪🇸 ' : '🇺🇸 ') + 'Audio: ' + LANGS[nextLang].label); } catch(e){}
+      }
+    }
+
+    vid.addEventListener('loadedmetadata', onReady);
+    vid.src = LANGS[nextLang].src;
+    vid.load();
+  }
+
+  function init() {
+    var vid = document.getElementById('vid');
+    if (!vid) return false;
+    var btn = buildBtn();
+    if (!btn) return false;
+    if (currentLang === null) currentLang = detectCurrentLang(vid);
+    paintBtn();
+    return true;
+  }
+
+  /* Mostrar/ocultar el botón en sincronía con la barra de controles inferior,
+     observando sus clases (igual estrategia que otros parches de esta sección) */
+  function watchUi() {
+    var bottomBar = document.getElementById('bottomBar');
+    if (!bottomBar) return;
+    var obs = new MutationObserver(function(){
+      if (bottomBar.classList.contains('visible')) showBtn();
+      else hideBtnIfUiHidden();
+    });
+    obs.observe(bottomBar, { attributes: true, attributeFilter: ['class'] });
+    if (bottomBar.classList.contains('visible')) showBtn();
+  }
+
+  function boot() {
+    if (!init()) {
+      var tries = 0;
+      var iv = setInterval(function(){
+        tries++;
+        if (init() || tries > 40) clearInterval(iv);
+      }, 250);
+    }
+    watchUi();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else { boot(); }
+  window.addEventListener('load', boot);
+  [300, 800, 1800].forEach(function(ms){ setTimeout(boot, ms); });
+})();
+</script>
+<!-- ===== FIN BOTÓN FLOTANTE DE AUDIO ===== -->
 
 </body>
 </html>
