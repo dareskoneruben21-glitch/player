@@ -4532,23 +4532,38 @@ body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
   var params  = new URLSearchParams(location.search);
   var srcEs   = b64d(params.get('audioEs') || '');
   var srcEn   = b64d(params.get('audioEn') || '');
+  var srcCas  = b64d(params.get('audioCas') || '');
+  var srcJa   = b64d(params.get('audioJa') || '');
 
-  /* Si no hay ambas pistas, no tiene sentido mostrar el botón */
-  if (!srcEs || !srcEn) return;
+  /* Construir lista de idiomas disponibles en orden de prioridad */
+  var LANGS_ALL = [
+    { key: 'Es',  label: 'Latino',     flag: '🌎', src: srcEs  },
+    { key: 'Cas', label: 'Castellano', flag: '🇪🇸', src: srcCas },
+    { key: 'En',  label: 'Inglés',     flag: '🇺🇸', src: srcEn  },
+    { key: 'Ja',  label: 'Japonés',    flag: '🇯🇵', src: srcJa  }
+  ].filter(function(l){ return !!l.src; });
 
-  var LANGS = {
-    Es: { label: 'Latino', flag: '🇪🇸', src: srcEs },
-    En: { label: 'Inglés', flag: '🇺🇸', src: srcEn }
-  };
+  /* Necesitamos al menos 2 pistas para mostrar el botón */
+  if (LANGS_ALL.length < 2) return;
 
-  /* Determinar idioma actual comparando el src del <video> con las 2 URLs.
-     Si no coincide con ninguna (ej. el link "principal" del catálogo es
-     distinto), se asume Latino como punto de partida. */
+  /* Mapa rápido por key */
+  var LANGS = {};
+  LANGS_ALL.forEach(function(l){ LANGS[l.key] = l; });
+
+  /* Determinar idioma actual comparando el src del <video> */
   function detectCurrentLang(vid) {
-    if (!vid) return 'Es';
+    if (!vid) return LANGS_ALL[0].key;
     var cur = vid.currentSrc || vid.src || '';
-    if (cur && cur.indexOf(srcEn) !== -1) return 'En';
-    return 'Es';
+    for (var i = 0; i < LANGS_ALL.length; i++) {
+      if (cur && cur.indexOf(LANGS_ALL[i].src) !== -1) return LANGS_ALL[i].key;
+    }
+    return LANGS_ALL[0].key;
+  }
+
+  /* Obtener el siguiente idioma en la lista circular */
+  function nextLangKey(curKey) {
+    var idx = LANGS_ALL.findIndex(function(l){ return l.key === curKey; });
+    return LANGS_ALL[(idx + 1) % LANGS_ALL.length].key;
   }
 
   var currentLang = null;
@@ -4563,10 +4578,10 @@ body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
     btn.type = 'button';
     btn.setAttribute('aria-label', 'Cambiar idioma de audio');
     btn.innerHTML =
-      '<span class="flag" id="audioToggleFlag">🇪🇸</span>' +
+      '<span class="flag" id="audioToggleFlag">' + LANGS_ALL[0].flag + '</span>' +
       '<span class="lang-label">' +
-        '<span class="lang-cur" id="audioToggleCur">Latino</span>' +
-        '<span class="lang-next" id="audioToggleNext">Cambiar a Inglés</span>' +
+        '<span class="lang-cur" id="audioToggleCur">' + LANGS_ALL[0].label + '</span>' +
+        '<span class="lang-next" id="audioToggleNext">Cambiar a ' + LANGS_ALL[1].label + '</span>' +
       '</span>';
     btn.addEventListener('click', function(e){
       e.preventDefault();
@@ -4580,10 +4595,12 @@ body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
   function paintBtn() {
     var btn = document.getElementById('audioToggleBtn');
     if (!btn || !currentLang) return;
-    var other = currentLang === 'Es' ? 'En' : 'Es';
-    document.getElementById('audioToggleFlag').textContent = LANGS[currentLang].flag;
-    document.getElementById('audioToggleCur').textContent = LANGS[currentLang].label;
-    document.getElementById('audioToggleNext').textContent = 'Cambiar a ' + LANGS[other].label;
+    var cur  = LANGS[currentLang];
+    var nKey = nextLangKey(currentLang);
+    var nxt  = LANGS[nKey];
+    document.getElementById('audioToggleFlag').textContent = cur.flag;
+    document.getElementById('audioToggleCur').textContent  = cur.label;
+    document.getElementById('audioToggleNext').textContent = 'Cambiar a ' + nxt.label;
     btn.classList.add('ready');
   }
 
@@ -4601,7 +4618,7 @@ body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
   function switchAudio() {
     var vid = document.getElementById('vid');
     if (!vid || switching || !currentLang) return;
-    var nextLang = currentLang === 'Es' ? 'En' : 'Es';
+    var nKey = nextLangKey(currentLang);
     var resumeAt = vid.currentTime || 0;
     var wasPaused = vid.paused;
     switching = true;
@@ -4612,17 +4629,17 @@ body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
       vid.removeEventListener('loadedmetadata', onReady);
       try { vid.currentTime = resumeAt; } catch(e){}
       if (!wasPaused) { vid.play().catch(function(){}); }
-      currentLang = nextLang;
+      currentLang = nKey;
       switching = false;
       if (btn) btn.classList.remove('switching');
       paintBtn();
       if (typeof toast === 'function') {
-        try { toast((nextLang === 'Es' ? '🇪🇸 ' : '🇺🇸 ') + 'Audio: ' + LANGS[nextLang].label); } catch(e){}
+        try { toast(LANGS[nKey].flag + ' Audio: ' + LANGS[nKey].label); } catch(e){}
       }
     }
 
     vid.addEventListener('loadedmetadata', onReady);
-    vid.src = LANGS[nextLang].src;
+    vid.src = LANGS[nKey].src;
     vid.load();
   }
 
@@ -4631,8 +4648,10 @@ body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
     if (!vid) return false;
     var btn = buildBtn();
     if (!btn) return false;
-    if (currentLang === null) currentLang = detectCurrentLang(vid);
-    paintBtn();
+    if (currentLang === null) {
+      currentLang = detectCurrentLang(vid);
+      paintBtn();
+    }
     return true;
   }
 
