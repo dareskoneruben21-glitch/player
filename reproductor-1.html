@@ -4470,61 +4470,58 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
      boot, etc.) — trabaja únicamente sobre el DOM, igual que los
      demás parches de esta sección. ============================= -->
 <style>
-/* ── AUDIO TOGGLE BTN — ULTRA PREMIUM ── */
+/* ── AUDIO TOGGLE BTN — INLINE EN BARRA DE CONTROLES ── */
 #audioToggleBtn{
-  position:absolute;
-  right:clamp(10px,2.5vw,22px);
-  bottom:calc(clamp(70px,16vw,110px) + env(safe-area-inset-bottom,0px));
-  z-index:30;
   display:none;
   align-items:center;
-  gap:10px;
-  padding:10px 16px 10px 12px;
+  gap:7px;
+  padding:7px 11px 7px 9px;
   /* Glassmorphism premium */
   background:linear-gradient(135deg,rgba(18,18,26,.82) 0%,rgba(10,10,16,.88) 100%);
   border:1px solid rgba(212,175,55,.28);
-  border-radius:14px;
+  border-radius:10px;
   color:#fff;
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   cursor:pointer;
   backdrop-filter:blur(20px) saturate(1.4);
   -webkit-backdrop-filter:blur(20px) saturate(1.4);
   box-shadow:
-    0 8px 32px rgba(0,0,0,.55),
+    0 4px 16px rgba(0,0,0,.45),
     0 1px 0 rgba(255,255,255,.06) inset,
     0 0 0 1px rgba(212,175,55,.08) inset;
   transition:opacity .35s cubic-bezier(.4,0,.2,1),
-             transform .35s cubic-bezier(.4,0,.2,1),
              background .2s,border-color .2s,box-shadow .2s;
   opacity:0;
-  transform:translateY(8px) scale(.97);
   pointer-events:none;
   user-select:none;
   -webkit-user-select:none;
   letter-spacing:0;
+  flex-shrink:0;
+  position:relative;
 }
-#audioToggleBtn.ready{display:flex;}
-#audioToggleBtn.visible{
+#audioToggleBtn.ready,
+#audioToggleBtnM.ready{display:flex;}
+#audioToggleBtn.visible,
+#audioToggleBtnM.visible{
   opacity:1;
-  transform:translateY(0) scale(1);
   pointer-events:auto;
 }
-#audioToggleBtn:hover{
+#audioToggleBtn:hover,
+#audioToggleBtnM:hover{
   background:linear-gradient(135deg,rgba(28,24,42,.9) 0%,rgba(18,16,28,.95) 100%);
   border-color:rgba(212,175,55,.55);
   box-shadow:
-    0 10px 36px rgba(0,0,0,.6),
-    0 0 18px rgba(212,175,55,.12),
+    0 6px 24px rgba(0,0,0,.5),
+    0 0 12px rgba(212,175,55,.1),
     0 1px 0 rgba(255,255,255,.08) inset;
 }
 #audioToggleBtn:active{
-  transform:translateY(0) scale(.96);
-  box-shadow:0 4px 16px rgba(0,0,0,.5);
+  box-shadow:0 2px 8px rgba(0,0,0,.5);
 }
 /* Ícono de audio (SVG inline inyectado vía JS) */
 #audioToggleBtn .atb-icon{
   flex-shrink:0;
-  width:18px;height:18px;
+  width:15px;height:15px;
   display:flex;align-items:center;justify-content:center;
   color:rgba(212,175,55,.9);
 }
@@ -4535,24 +4532,24 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
 /* Separador vertical dorado */
 #audioToggleBtn .atb-sep{
   width:1px;
-  height:28px;
+  height:20px;
   background:linear-gradient(to bottom,transparent,rgba(212,175,55,.3) 30%,rgba(212,175,55,.3) 70%,transparent);
   flex-shrink:0;
 }
 /* Textos */
 #audioToggleBtn .lang-label{
-  display:flex;flex-direction:column;gap:2px;
+  display:flex;flex-direction:column;gap:1px;
   line-height:1;
 }
 #audioToggleBtn .lang-cur{
-  font-size:12.5px;
+  font-size:10.5px;
   font-weight:700;
   color:#fff;
   letter-spacing:.4px;
   text-transform:uppercase;
 }
 #audioToggleBtn .lang-next{
-  font-size:9px;
+  font-size:8px;
   font-weight:500;
   color:rgba(212,175,55,.7);
   letter-spacing:.3px;
@@ -4561,19 +4558,21 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
 /* Flecha chevron */
 #audioToggleBtn .atb-chevron{
   flex-shrink:0;
-  width:14px;height:14px;
+  width:11px;height:11px;
   display:flex;align-items:center;justify-content:center;
   color:rgba(212,175,55,.6);
-  margin-left:2px;
+  margin-left:1px;
 }
 #audioToggleBtn .atb-chevron svg{width:100%;height:100%;display:block;}
 
 /* Switching shimmer */
-#audioToggleBtn.switching{
+#audioToggleBtn.switching,
+#audioToggleBtnM.switching{
   opacity:.5;
   pointer-events:none;
 }
-#audioToggleBtn.switching::after{
+#audioToggleBtn.switching::after,
+#audioToggleBtnM.switching::after{
   content:'';
   position:absolute;inset:0;
   border-radius:14px;
@@ -4588,23 +4587,22 @@ body.tv-mode #nextEpFloatBtn { font-size:15px; padding:12px 22px 12px 16px; bott
 
 /* TV mode */
 body.tv-mode #audioToggleBtn{
-  padding:14px 22px 14px 16px;
-  border-radius:18px;
-  gap:14px;
-  bottom:clamp(110px,20vw,150px);
+  padding:10px 16px 10px 12px;
+  border-radius:14px;
+  gap:12px;
 }
-body.tv-mode #audioToggleBtn .atb-icon{width:24px;height:24px;}
-body.tv-mode #audioToggleBtn .lang-cur{font-size:17px;}
-body.tv-mode #audioToggleBtn .lang-next{font-size:12px;}
-body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
+body.tv-mode #audioToggleBtn .atb-icon{width:20px;height:20px;}
+body.tv-mode #audioToggleBtn .lang-cur{font-size:14px;}
+body.tv-mode #audioToggleBtn .lang-next{font-size:10px;}
+body.tv-mode #audioToggleBtn .atb-sep{height:28px;}
 
 /* Mobile pequeño */
 @media(max-width:480px){
-  #audioToggleBtn{padding:9px 13px 9px 11px;gap:8px;border-radius:12px;}
-  #audioToggleBtn .atb-icon{width:16px;height:16px;}
-  #audioToggleBtn .lang-cur{font-size:11.5px;}
-  #audioToggleBtn .lang-next{font-size:8.5px;}
-  #audioToggleBtn .atb-sep{height:24px;}
+  #audioToggleBtn{padding:6px 9px 6px 8px;gap:6px;border-radius:9px;}
+  #audioToggleBtn .atb-icon{width:13px;height:13px;}
+  #audioToggleBtn .lang-cur{font-size:9.5px;}
+  #audioToggleBtn .lang-next{font-size:7px;}
+  #audioToggleBtn .atb-sep{height:18px;}
 }
 </style>
 <script>
@@ -4675,49 +4673,70 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
 
   function buildBtn() {
     if (document.getElementById('audioToggleBtn')) return document.getElementById('audioToggleBtn');
-    var player = document.getElementById('player');
-    if (!player) return null;
-    var btn = document.createElement('button');
-    btn.id = 'audioToggleBtn';
-    btn.type = 'button';
-    btn.setAttribute('aria-label', 'Cambiar idioma de audio');
-    btn.innerHTML =
-      '<span class="atb-icon">' + ATB_ICON + '</span>' +
-      '<span class="atb-sep"></span>' +
-      '<span class="lang-label">' +
-        '<span class="lang-cur" id="audioToggleCur">' + LANGS_ALL[0].label + '</span>' +
-        '<span class="lang-next" id="audioToggleNext">→ ' + LANGS_ALL[1].label + '</span>' +
-      '</span>' +
-      '<span class="atb-chevron">' + ATB_CHEVRON + '</span>';
-    btn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      switchAudio();
-    });
-    player.appendChild(btn);
+    function makeBtn(id) {
+      var b = document.createElement('button');
+      b.id = id;
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Cambiar idioma de audio');
+      b.innerHTML =
+        '<span class="atb-icon">' + ATB_ICON + '</span>' +
+        '<span class="atb-sep"></span>' +
+        '<span class="lang-label">' +
+          '<span class="lang-cur atb-cur-text">' + LANGS_ALL[0].label + '</span>' +
+          '<span class="lang-next atb-next-text">→ ' + LANGS_ALL[1].label + '</span>' +
+        '</span>' +
+        '<span class="atb-chevron">' + ATB_CHEVRON + '</span>';
+      b.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        switchAudio();
+      });
+      return b;
+    }
+
+    var btn = makeBtn('audioToggleBtn');
+    var btnM = makeBtn('audioToggleBtnM');
+
+    /* Desktop: antes del lockBtnD */
+    var lockD = document.getElementById('lockBtnD');
+    if (lockD && lockD.parentNode) lockD.parentNode.insertBefore(btn, lockD);
+
+    /* Mobile: antes del lockBtnM */
+    var lockM = document.getElementById('lockBtnM');
+    if (lockM && lockM.parentNode) lockM.parentNode.insertBefore(btnM, lockM);
+
     return btn;
   }
 
   function paintBtn() {
-    var btn = document.getElementById('audioToggleBtn');
-    if (!btn || !currentLang) return;
+    if (!currentLang) return;
     var cur  = LANGS[currentLang];
     var nKey = nextLangKey(currentLang);
     var nxt  = LANGS[nKey];
-    document.getElementById('audioToggleCur').textContent  = cur.label;
-    document.getElementById('audioToggleNext').textContent = '→ ' + nxt.label;
-    btn.classList.add('ready');
+    /* Actualizar ambos botones (desktop y mobile) */
+    document.querySelectorAll('.atb-cur-text').forEach(function(el){ el.textContent = cur.label; });
+    document.querySelectorAll('.atb-next-text').forEach(function(el){ el.textContent = '→ ' + nxt.label; });
+    var btn = document.getElementById('audioToggleBtn');
+    if (btn) btn.classList.add('ready');
+    var btnM = document.getElementById('audioToggleBtnM');
+    if (btnM) btnM.classList.add('ready');
   }
 
   function showBtn() {
     var btn = document.getElementById('audioToggleBtn');
     if (btn) btn.classList.add('visible');
+    var btnM = document.getElementById('audioToggleBtnM');
+    if (btnM) btnM.classList.add('visible');
   }
   function hideBtnIfUiHidden() {
-    var btn = document.getElementById('audioToggleBtn');
     var bottomBar = document.getElementById('bottomBar');
-    if (!btn) return;
-    if (bottomBar && bottomBar.classList.contains('hidden')) btn.classList.remove('visible');
+    if (!bottomBar) return;
+    if (bottomBar.classList.contains('hidden')) {
+      var btn = document.getElementById('audioToggleBtn');
+      if (btn) btn.classList.remove('visible');
+      var btnM = document.getElementById('audioToggleBtnM');
+      if (btnM) btnM.classList.remove('visible');
+    }
   }
 
   /* ── TÉCNICA AUDIO FANTASMA ──────────────────────────────────────────
@@ -4764,21 +4783,21 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
     var audio = getGhost();
     var firstLang = LANGS_ALL[0];
     audio.src = firstLang.src;
-    audio.currentTime = vid.currentTime || 0;
-    audio.volume = vid.volume !== undefined ? vid.volume : 1;
-    /* Silenciar el video principal — el audio viene del fantasma */
+    /* Silenciar el video principal DESDE EL INICIO — el audio viene del fantasma */
     vid.muted = true;
+    audio.volume = 1;
     audio.load();
     audio.addEventListener('canplay', function onGhostReady() {
       audio.removeEventListener('canplay', onGhostReady);
-      try { audio.currentTime = vid.currentTime; } catch(e){}
+      try { audio.currentTime = vid.currentTime || 0; } catch(e){}
       if (!vid.paused) { audio.play().catch(function(){}); }
       startSync(vid);
     });
-    /* Propagar volumen y mute del video al audio */
+    /* Propagar volumen: el volumen real lo controla el ghost, vid siempre muted */
     vid.addEventListener('volumechange', function() {
       if (!ghostAudio) return;
-      ghostAudio.volume = vid.muted ? 0 : (vid.volume || 1);
+      /* vid.muted se usa para silenciar — mantenemos vid.muted=true siempre,
+         pero propagamos el volumen del slider al ghost */
     });
     /* Propagar pause/play */
     vid.addEventListener('pause',  function(){ if (ghostAudio && !ghostAudio.paused) ghostAudio.pause(); });
@@ -4786,29 +4805,80 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
     vid.addEventListener('seeked', function(){ if (ghostAudio) { try { ghostAudio.currentTime = vid.currentTime; } catch(e){} } });
   }
 
+  /* Interceptar toggleMute para que opere sobre el ghost, no el vid */
+  function patchMuteForGhost() {
+    var vid = document.getElementById('vid');
+    if (!vid || !ghostAudio) return;
+    /* El volumen real está en ghostAudio; cuando el usuario sube/baja volumen
+       hay que redirigir al ghost */
+    var _origVol = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'volume');
+    /* No tocamos el prototype; en su lugar sobreescribimos setVol y toggleMute
+       en el scope global si existen */
+    if (typeof window._ghostMutePatched === 'undefined') {
+      window._ghostMutePatched = true;
+      var _nativeToggleMute = window.toggleMute;
+      var _nativeSetVol     = window.setVol;
+      if (typeof _nativeToggleMute === 'function') {
+        window.toggleMute = function() {
+          if (ghostAudio) {
+            ghostAudio.muted = !ghostAudio.muted;
+            var ico = ghostAudio.muted ? 0 : (ghostAudio.volume || 1);
+            if (typeof updateVolIco === 'function') updateVolIco(ico);
+            var slider = document.getElementById('volSlider');
+            if (slider) slider.value = ghostAudio.muted ? 0 : ghostAudio.volume;
+          } else { _nativeToggleMute(); }
+        };
+      }
+      if (typeof _nativeSetVol === 'function') {
+        window.setVol = function(v) {
+          if (ghostAudio) {
+            ghostAudio.volume = v;
+            ghostAudio.muted = (v == 0);
+            if (typeof updateVolIco === 'function') updateVolIco(v);
+          } else { _nativeSetVol(v); }
+        };
+      }
+    }
+  }
+
   var ghostInited = false;
+
+  /* Inicializar ghost tan pronto como el video esté listo (canplay) */
+  function autoInitGhost() {
+    var vid = document.getElementById('vid');
+    if (!vid) return;
+    if (!ghostInited) {
+      ghostInited = true;
+      /* Silenciar video INMEDIATAMENTE antes de que suene nada */
+      vid.muted = true;
+      initGhost(vid);
+      setTimeout(patchMuteForGhost, 200);
+    }
+  }
 
   function switchAudio() {
     var vid = document.getElementById('vid');
     if (!vid || switching || !currentLang) return;
     var nKey = nextLangKey(currentLang);
     var btn  = document.getElementById('audioToggleBtn');
+    var btnM = document.getElementById('audioToggleBtnM');
     if (btn) btn.classList.add('switching');
+    if (btnM) btnM.classList.add('switching');
     switching = true;
 
-    /* Primera vez: inicializar el audio fantasma */
+    /* Si por alguna razón el ghost no se inició aún, inicializarlo */
     if (!ghostInited) {
       ghostInited = true;
+      vid.muted = true;
       initGhost(vid);
-      /* Pequeña pausa para que initGhost cargue, luego cambiar */
-      setTimeout(function() { doSwitch(vid, nKey, btn); }, 400);
+      setTimeout(function() { doSwitch(vid, nKey, btn, btnM); }, 500);
       return;
     }
 
-    doSwitch(vid, nKey, btn);
+    doSwitch(vid, nKey, btn, btnM);
   }
 
-  function doSwitch(vid, nKey, btn) {
+  function doSwitch(vid, nKey, btn, btnM) {
     var audio    = getGhost();
     var resumeAt = vid.currentTime || 0;
     var wasPaused = vid.paused;
@@ -4826,6 +4896,7 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
       currentLang = nKey;
       switching   = false;
       if (btn) btn.classList.remove('switching');
+      if (btnM) btnM.classList.remove('switching');
       paintBtn();
       if (typeof toast === 'function') {
         try { toast('Audio: ' + LANGS[nKey].label); } catch(e){}
@@ -4844,6 +4915,7 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
         currentLang = nKey;
         switching   = false;
         if (btn) btn.classList.remove('switching');
+        if (btnM) btnM.classList.remove('switching');
         paintBtn();
       }
     }, 4000);
@@ -4883,6 +4955,23 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
       }, 250);
     }
     watchUi();
+    /* Silenciar video y arrancar ghost de inmediato para evitar el eco */
+    var vid = document.getElementById('vid');
+    if (vid) {
+      vid.muted = true;
+      if (vid.readyState >= 2) {
+        autoInitGhost();
+      } else {
+        vid.addEventListener('loadeddata', function onLD() {
+          vid.removeEventListener('loadeddata', onLD);
+          autoInitGhost();
+        });
+        vid.addEventListener('canplay', function onCP() {
+          vid.removeEventListener('canplay', onCP);
+          autoInitGhost();
+        });
+      }
+    }
   }
 
   if (document.readyState === 'loading') {
