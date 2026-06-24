@@ -4720,35 +4720,111 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
     if (bottomBar && bottomBar.classList.contains('hidden')) btn.classList.remove('visible');
   }
 
+  /* ── TÉCNICA AUDIO FANTASMA ──────────────────────────────────────────
+     El <video> principal NUNCA se toca — siempre corre en mute.
+     Un <audio> invisible se sincroniza con él y da el sonido real.
+     Al cambiar idioma solo recargamos el <audio> (mucho más rápido)
+     y lo seekamos al tiempo actual del video. Sin reinicio visual.
+  ────────────────────────────────────────────────────────────────────── */
+
+  var ghostAudio = null;   // el elemento <audio> invisible
+  var syncIv     = null;   // intervalo de sincronía de tiempo
+  var DRIFT_MAX  = 0.35;   // segundos de desfase máximo antes de re-sincronizar
+
+  function getGhost() {
+    if (ghostAudio) return ghostAudio;
+    ghostAudio = document.createElement('audio');
+    ghostAudio.style.cssText = 'position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
+    ghostAudio.preload = 'auto';
+    document.body.appendChild(ghostAudio);
+    return ghostAudio;
+  }
+
+  /* Mantener el audio en sincronía con el video cada 1.5s */
+  function startSync(vid) {
+    stopSync();
+    syncIv = setInterval(function() {
+      if (!ghostAudio || !vid) return;
+      var diff = Math.abs(ghostAudio.currentTime - vid.currentTime);
+      if (diff > DRIFT_MAX) {
+        try { ghostAudio.currentTime = vid.currentTime; } catch(e){}
+      }
+      /* Sincronizar pause/play */
+      if (vid.paused && !ghostAudio.paused) { ghostAudio.pause(); }
+      else if (!vid.paused && ghostAudio.paused) { ghostAudio.play().catch(function(){}); }
+    }, 1500);
+  }
+
+  function stopSync() {
+    if (syncIv) { clearInterval(syncIv); syncIv = null; }
+  }
+
+  /* Arrancar el audio fantasma con la primera pista */
+  function initGhost(vid) {
+    var audio = getGhost();
+    var firstLang = LANGS_ALL[0];
+    audio.src = firstLang.src;
+    audio.currentTime = vid.currentTime || 0;
+    audio.volume = vid.volume !== undefined ? vid.volume : 1;
+    /* Silenciar el video principal — el audio viene del fantasma */
+    vid.muted = true;
+    audio.load();
+    audio.addEventListener('canplay', function onGhostReady() {
+      audio.removeEventListener('canplay', onGhostReady);
+      try { audio.currentTime = vid.currentTime; } catch(e){}
+      if (!vid.paused) { audio.play().catch(function(){}); }
+      startSync(vid);
+    });
+    /* Propagar volumen y mute del video al audio */
+    vid.addEventListener('volumechange', function() {
+      if (!ghostAudio) return;
+      ghostAudio.volume = vid.muted ? 0 : (vid.volume || 1);
+    });
+    /* Propagar pause/play */
+    vid.addEventListener('pause',  function(){ if (ghostAudio && !ghostAudio.paused) ghostAudio.pause(); });
+    vid.addEventListener('play',   function(){ if (ghostAudio && ghostAudio.paused)  ghostAudio.play().catch(function(){}); });
+    vid.addEventListener('seeked', function(){ if (ghostAudio) { try { ghostAudio.currentTime = vid.currentTime; } catch(e){} } });
+  }
+
+  var ghostInited = false;
+
   function switchAudio() {
     var vid = document.getElementById('vid');
     if (!vid || switching || !currentLang) return;
     var nKey = nextLangKey(currentLang);
-    var resumeAt = vid.currentTime || 0;
-    var wasPaused = vid.paused;
-    switching = true;
-    var btn = document.getElementById('audioToggleBtn');
+    var btn  = document.getElementById('audioToggleBtn');
     if (btn) btn.classList.add('switching');
+    switching = true;
 
-    /* Intentar seek con reintentos hasta que el buffer lo permita */
-    function seekTo(target, tries) {
-      if (!tries) tries = 0;
-      try {
-        vid.currentTime = target;
-      } catch(e){}
-      /* Si el tiempo no se aplicó correctamente, reintentar hasta 8 veces */
-      if (tries < 8 && Math.abs(vid.currentTime - target) > 1.5) {
-        setTimeout(function(){ seekTo(target, tries + 1); }, 300);
-      }
+    /* Primera vez: inicializar el audio fantasma */
+    if (!ghostInited) {
+      ghostInited = true;
+      initGhost(vid);
+      /* Pequeña pausa para que initGhost cargue, luego cambiar */
+      setTimeout(function() { doSwitch(vid, nKey, btn); }, 400);
+      return;
     }
 
-    function onCanPlay() {
-      vid.removeEventListener('canplay', onCanPlay);
-      vid.removeEventListener('loadedmetadata', onCanPlay);
-      seekTo(resumeAt, 0);
-      if (!wasPaused) { vid.play().catch(function(){}); }
+    doSwitch(vid, nKey, btn);
+  }
+
+  function doSwitch(vid, nKey, btn) {
+    var audio    = getGhost();
+    var resumeAt = vid.currentTime || 0;
+    var wasPaused = vid.paused;
+
+    stopSync();
+    audio.pause();
+    audio.src = LANGS[nKey].src;
+    audio.load();
+
+    function onReady() {
+      audio.removeEventListener('canplay', onReady);
+      try { audio.currentTime = resumeAt; } catch(e){}
+      if (!wasPaused) { audio.play().catch(function(){}); }
+      startSync(vid);
       currentLang = nKey;
-      switching = false;
+      switching   = false;
       if (btn) btn.classList.remove('switching');
       paintBtn();
       if (typeof toast === 'function') {
@@ -4756,15 +4832,21 @@ body.tv-mode #audioToggleBtn .atb-sep{height:36px;}
       }
     }
 
-    /* canplay es más confiable que loadedmetadata para saber cuándo se puede buscar */
-    vid.addEventListener('canplay', onCanPlay);
-    /* fallback: loadedmetadata por si canplay no llega */
-    setTimeout(function(){
-      vid.addEventListener('loadedmetadata', onCanPlay);
-    }, 50);
+    audio.addEventListener('canplay', onReady);
 
-    vid.src = LANGS[nKey].src;
-    vid.load();
+    /* Fallback por si canplay no llega en 4s */
+    setTimeout(function() {
+      audio.removeEventListener('canplay', onReady);
+      if (switching) {
+        try { audio.currentTime = vid.currentTime; } catch(e){}
+        if (!wasPaused) audio.play().catch(function(){});
+        startSync(vid);
+        currentLang = nKey;
+        switching   = false;
+        if (btn) btn.classList.remove('switching');
+        paintBtn();
+      }
+    }, 4000);
   }
 
   function init() {
