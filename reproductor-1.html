@@ -2871,6 +2871,42 @@ function limpiarLink(link) {
     msg(subOn?'Subtítulos encendidos':'Subtítulos apagados');
   };
 
+  /* ── Parser SRT ── */
+  function parseSRT(text){
+    var result=[];
+    var blocks=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split(/\n\n+/);
+    blocks.forEach(function(block){
+      var lines=block.trim().split('\n');
+      if(lines.length<2) return;
+      // Saltar línea numérica si existe
+      var ti=0;
+      if(/^\d+$/.test(lines[0].trim())) ti=1;
+      if(!lines[ti]||lines[ti].indexOf('-->')===-1) return;
+      var times=lines[ti].split('-->');
+      var start=toSec(times[0].trim().replace(',','.'));
+      var end=toSec(times[1].trim().split(' ')[0].replace(',','.'));
+      var textLines=lines.slice(ti+1).join('\n');
+      var clean=textLines.replace(/<[^>]+>/g,'').trim();
+      if(clean) result.push({start:start,end:end,text:clean});
+    });
+    return result;
+  }
+
+  /* ── Cargar subtítulos desde texto ── */
+  window.novaLoadSubText=function(text, format){
+    var parsed;
+    if(format==='srt') parsed=parseSRT(text);
+    else parsed=parseVTT(text);
+    if(!parsed||!parsed.length){msg('Subtítulos vacíos');return;}
+    cues=parsed;
+    setSub(true);
+    msg('Subtítulos cargados ('+cues.length+' cues)');
+    if(!rafId) renderLoop();
+  };
+
+  /* ── Abrir panel OS si no hay subs ── */
+  window.novaSubCount=function(){ return cues.length; };
+
 })();
 
 function msg(t){var x=document.getElementById('toast');if(!x)return;x.textContent=t;x.classList.add('show');clearTimeout(window._m);window._m=setTimeout(function(){x.classList.remove('show');},1600);}
@@ -4982,6 +5018,167 @@ body.tv-mode #audioToggleBtn .atb-sep{height:28px;}
 })();
 </script>
 <!-- ===== FIN BOTÓN FLOTANTE DE AUDIO ===== -->
+
+<!-- ===== OPENSUBTITLES AUTO-SILENT ===== -->
+<script>
+(function(){
+  var OS_KEY = '2k2p5mgMLTtfTjsGWvWY5ej3rmPv6m8b';
+  var OS_API = 'https://api.opensubtitles.com/api/v1';
+  var OS_LANG = 'es'; // idioma por defecto
+  var busy = false;
+
+  /* ── Obtener título limpio ── */
+  function getTitle(){
+    // 1. Desde el topTitle del reproductor
+    var el = document.getElementById('topTitle');
+    if(el && el.textContent.trim()) return cleanTitle(el.textContent.trim());
+    // 2. Desde parámetro URL ?title=
+    try{
+      var p = new URLSearchParams(location.search);
+      var t = p.get('title');
+      if(t){
+        // decodificar base64 si aplica
+        try{
+          t = t.replace(/-/g,'+').replace(/_/g,'/');
+          while(t.length%4) t+='=';
+          var b = Uint8Array.from(atob(t), function(c){return c.charCodeAt(0);});
+          t = new TextDecoder('utf-8').decode(b);
+        }catch(e){}
+        return cleanTitle(t);
+      }
+    }catch(e){}
+    // 3. Del nombre del archivo de video
+    var vid = document.getElementById('vid');
+    if(vid && vid.src){
+      var name = decodeURIComponent(vid.src.split('/').pop().split('?')[0]);
+      return cleanTitle(name.replace(/\.[^.]+$/,''));
+    }
+    return '';
+  }
+
+  function cleanTitle(t){
+    return t
+      .replace(/\.[^.]+$/, '')           // quitar extensión
+      .replace(/[\._]/g, ' ')            // puntos/guiones bajos → espacio
+      .replace(/\b(1080p?|720p?|480p?|4k|uhd|bluray|blu-ray|bdrip|webrip|web-dl|dvdrip|x264|x265|hevc|avc|dual|lat|latino|esp|spa|sub|hdr|sdr|repack|proper|extended|unrated|theatrical|directors?\.?cut|limited|internal)\b/gi,'')
+      .replace(/\s*[\[\(][^\]\)]*[\]\)]\s*/g,' ')  // quitar [grupos] y (años especiales)
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+
+  /* ── Toast ligero ── */
+  function toast(t){
+    if(typeof window.msg==='function'){window.msg(t);return;}
+    var x=document.getElementById('toast');
+    if(!x)return;
+    x.textContent=t;x.classList.add('show');
+    clearTimeout(window._osToast);
+    window._osToast=setTimeout(function(){x.classList.remove('show');},2200);
+  }
+
+  /* ── Aplicar subtítulo desde fileId ── */
+  function applyFileId(fileId){
+    fetch(OS_API+'/download',{
+      method:'POST',
+      headers:{'Api-Key':OS_KEY,'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({file_id:parseInt(fileId)})
+    })
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var link=data.link;
+      if(!link){toast('CC: no se pudo obtener enlace');busy=false;return;}
+      return fetch(link).then(function(r){return r.text();}).then(function(text){
+        var fmt=link.match(/\.vtt/i)?'vtt':'srt';
+        if(typeof window.novaLoadSubText==='function'){
+          window.novaLoadSubText(text,fmt);
+          toast('CC ✓ Subtítulos en español activados');
+        }
+        busy=false;
+      });
+    })
+    .catch(function(e){
+      toast('CC: error al descargar subtítulo');
+      console.warn('[OS download]',e);
+      busy=false;
+    });
+  }
+
+  /* ── Buscar y aplicar el mejor resultado automáticamente ── */
+  function autoLoadSubs(){
+    if(busy) return;
+    var title = getTitle();
+    if(!title){toast('CC: no se detectó el título');return;}
+    busy=true;
+    toast('CC: buscando subtítulos…');
+
+    var url=OS_API+'/subtitles?query='+encodeURIComponent(title)+'&languages='+OS_LANG+'&per_page=10';
+    fetch(url,{headers:{'Api-Key':OS_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var items=(data.data||[]);
+      if(!items.length){
+        // Intentar con título más corto (primeras 3 palabras)
+        var short=title.split(' ').slice(0,3).join(' ');
+        if(short!==title){
+          busy=false;
+          var url2=OS_API+'/subtitles?query='+encodeURIComponent(short)+'&languages='+OS_LANG+'&per_page=10';
+          fetch(url2,{headers:{'Api-Key':OS_KEY}})
+          .then(function(r){return r.json();})
+          .then(function(d){
+            var it=(d.data||[]);
+            if(!it.length){toast('CC: no se encontraron subtítulos');busy=false;return;}
+            busy=true;
+            pickBest(it);
+          }).catch(function(){toast('CC: error de búsqueda');busy=false;});
+          return;
+        }
+        toast('CC: no se encontraron subtítulos');
+        busy=false;
+        return;
+      }
+      pickBest(items);
+    })
+    .catch(function(e){
+      toast('CC: error de conexión');
+      console.warn('[OS search]',e);
+      busy=false;
+    });
+  }
+
+  /* Elegir el mejor: más descargas entre los que tienen file_id */
+  function pickBest(items){
+    var best=null, bestDl=-1;
+    items.forEach(function(item){
+      var attr=item.attributes||{};
+      var files=attr.files||[];
+      if(!files.length||!files[0].file_id) return;
+      var dl=parseInt(attr.download_count)||0;
+      if(dl>bestDl){bestDl=dl;best={fileId:files[0].file_id};}
+    });
+    if(!best){toast('CC: no hay archivo de subtítulo disponible');busy=false;return;}
+    applyFileId(best.fileId);
+  }
+
+  /* ── Sobrescribir toggleSubs para que sea automático ── */
+  /* Esperamos a que el sistema de subs esté listo */
+  function hookToggle(){
+    var original = window.toggleSubs;
+    window.toggleSubs = function(){
+      // Si ya hay subs cargados → toggle on/off normal
+      if(typeof window.novaSubCount==='function' && window.novaSubCount()>0){
+        if(typeof original==='function') original();
+        return;
+      }
+      // Sin subs → buscar automáticamente
+      autoLoadSubs();
+    };
+  }
+
+  [100, 500, 1200].forEach(function(ms){ setTimeout(hookToggle, ms); });
+
+})();
+</script>
+<!-- ===== FIN OPENSUBTITLES AUTO-SILENT ===== -->
 
 </body>
 </html>
