@@ -2727,42 +2727,6 @@ function limpiarLink(link) {
   var subOn=false;
   var rafId=null;
   var subDiv=null;
-  var subOffset=0;      // segundos: + retrasa el subtítulo, - lo adelanta
-  var curSubKey='';      // identifica el video actual para guardar su offset
-
-  /* ── Guardar/Cargar offset por video (no rompe nada si localStorage falla) ── */
-  function offsetStorageKey(){
-    try{
-      var src=(document.getElementById('vid')||{}).currentSrc||(document.getElementById('vid')||{}).src||location.search;
-      var k=src.split('?')[0].split('/').pop()||'default';
-      return 'nova_subofs_'+k;
-    }catch(e){ return 'nova_subofs_default'; }
-  }
-  function loadOffset(){
-    try{
-      var v=parseFloat(localStorage.getItem(offsetStorageKey()));
-      subOffset=isNaN(v)?0:v;
-    }catch(e){ subOffset=0; }
-  }
-  function saveOffset(){
-    try{ localStorage.setItem(offsetStorageKey(),String(subOffset)); }catch(e){}
-  }
-  function setOffset(v){
-    subOffset=Math.max(-30,Math.min(30,v));
-    saveOffset();
-    var sign=subOffset>0?'+':'';
-    msg('Subtítulos: '+sign+subOffset.toFixed(1)+'s');
-  }
-  window.novaSubOffset=function(delta){
-    loadOffset();
-    setOffset(Math.round((subOffset+delta)*10)/10);
-  };
-  window.novaSubOffsetReset=function(){
-    setOffset(0);
-  };
-  window.novaSubOffsetGet=function(){
-    return subOffset;
-  };
 
   /* ── Crear el div de subtítulos ── */
   function createSubDiv(){
@@ -2830,7 +2794,7 @@ function limpiarLink(link) {
     if(!subOn||!subDiv||!cues.length)return;
     var vid=document.getElementById('vid');
     if(!vid)return;
-    var t=vid.currentTime-subOffset;
+    var t=vid.currentTime;
     var active=[];
     for(var i=0;i<cues.length;i++){
       if(t>=cues[i].start&&t<cues[i].end) active.push(cues[i].text);
@@ -2887,7 +2851,6 @@ function limpiarLink(link) {
   /* ── Init al cargar página ── */
   function init(){
     createSubDiv();
-    loadOffset();
     var params=new URLSearchParams(location.search);
     var subRaw=params.get('sub')||'';
     var subUrl=subRaw?b64d(subRaw):'';
@@ -2943,77 +2906,6 @@ function limpiarLink(link) {
 
   /* ── Abrir panel OS si no hay subs ── */
   window.novaSubCount=function(){ return cues.length; };
-
-  /* ── Mini-panel de sincronía (mantener pulsado el botón CC) ── */
-  function buildSyncPanel(){
-    if(document.getElementById('novaSyncPanel'))return;
-    var p=document.createElement('div');
-    p.id='novaSyncPanel';
-    p.style.cssText=[
-      'position:fixed','z-index:9999','bottom:84px','left:50%',
-      'transform:translateX(-50%)','display:none',
-      'background:rgba(10,10,10,.92)','border:1px solid rgba(255,255,255,.14)',
-      'border-radius:12px','padding:10px 14px','gap:10px',
-      'align-items:center','font-family:Inter,-apple-system,sans-serif',
-      'box-shadow:0 8px 24px rgba(0,0,0,.5)','backdrop-filter:blur(8px)'
-    ].join(';');
-    p.style.display='none';
-    p.innerHTML=
-      '<button type="button" data-act="minus" style="all:unset;cursor:pointer;color:#fff;font-size:15px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.08)">−0.5s</button>'+
-      '<span id="novaSyncVal" style="color:#fff;font-size:13px;min-width:64px;text-align:center;display:inline-block">0.0s</span>'+
-      '<button type="button" data-act="plus" style="all:unset;cursor:pointer;color:#fff;font-size:15px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.08)">+0.5s</button>'+
-      '<button type="button" data-act="reset" style="all:unset;cursor:pointer;color:#e5383b;font-size:12px;padding:6px 10px;border-radius:8px;background:rgba(229,56,59,.12);margin-left:4px">Reset</button>';
-    document.body.appendChild(p);
-    p.querySelector('[data-act="minus"]').addEventListener('click',function(){ window.novaSubOffset(-0.5); refreshSyncVal(); });
-    p.querySelector('[data-act="plus"]').addEventListener('click',function(){ window.novaSubOffset(0.5); refreshSyncVal(); });
-    p.querySelector('[data-act="reset"]').addEventListener('click',function(){ window.novaSubOffsetReset(); refreshSyncVal(); });
-  }
-  function refreshSyncVal(){
-    var el=document.getElementById('novaSyncVal');
-    if(!el)return;
-    var v=window.novaSubOffsetGet();
-    var sign=v>0?'+':'';
-    el.textContent=sign+v.toFixed(1)+'s';
-  }
-  function showSyncPanel(){
-    buildSyncPanel();
-    loadOffset();
-    refreshSyncVal();
-    var p=document.getElementById('novaSyncPanel');
-    p.style.display='flex';
-    clearTimeout(p._hideT);
-    p._hideT=setTimeout(function(){ p.style.display='none'; },6000);
-  }
-  function attachLongPress(btn){
-    if(!btn)return;
-    var pressT=null, longFired=false;
-    var start=function(e){
-      longFired=false;
-      pressT=setTimeout(function(){
-        longFired=true;
-        showSyncPanel();
-      },550);
-    };
-    var cancel=function(){
-      clearTimeout(pressT);
-    };
-    btn.addEventListener('mousedown',start);
-    btn.addEventListener('touchstart',start,{passive:true});
-    ['mouseup','mouseleave','touchend','touchcancel'].forEach(function(ev){
-      btn.addEventListener(ev,cancel);
-    });
-    // Si fue long-press, evitar que el click normal (toggleSubs) se dispare después
-    btn.addEventListener('click',function(e){
-      if(longFired){ e.stopPropagation(); e.preventDefault(); longFired=false; }
-    },true);
-  }
-  function initLongPress(){
-    attachLongPress(document.getElementById('subBtnD'));
-    attachLongPress(document.getElementById('subBtnM'));
-  }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',initLongPress);
-  } else { initLongPress(); }
 
 })();
 
